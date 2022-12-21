@@ -1,0 +1,51 @@
+﻿@using PhotoGram.ModelView;
+@model EditProfileModelView;
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<div class="container bootstrap snippets bootdey">
+    <h1 class="text-primary">Edit Profile</h1>
+    <hr>
+    <div class="row">
+        <!-- left column -->
+        <div class="col-md-3">
+            <div class="text-center">
+                <img src="@Model.ProfileImgUrl" class="avatar img-circle img-thumbnail" alt="avatar">
+                
+                 
+                
+            </div>
+        </div>
+
+        <!-- edit form column -->
+        <div class="col-md-9 personal-info">
+            <div class="alert alert-info alert-dismissable">
+                <a class="panel-close close" data-dismiss="alert">×</a>
+                <i class="fa fa-coffee"></i>
+                This is an <strong>.alert</strong>. Use this to show important messages to the user.
+            </div>
+            <h3>Personal info</h3>
+
+            <form class="form-horizontal" role="form" method="post" asp-action="Edit" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">Screen Name:</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" asp-for="ScreenName" type="text" disabled value="@Model.ScreenName">
+                        <input type="hidden" asp-for="ProfileImgUrl" value="@Model.ProfileImgUrl" />
+                        <input type="hidden" asp-for="Id" value="@Model.Id" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">About:</label>
+                    <div class="col-lg-8">
+                        <textarea class="form-control" asp-for="About" type="text" >@Model.About</textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+<hr>

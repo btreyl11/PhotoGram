@@ -1,0 +1,65 @@
+﻿@model Account
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<section class="h-100 gradient-custom-2">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-lg-9 col-xl-7">
+                <div class="card">
+                    <div class="rounded-top text-white d-flex flex-row" style="background-color: #000; height:200px;">
+                        <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
+                            <img src="@Model.ProfilImgURL"
+                                 alt="Generic placeholder image" class="img-fluid img-thumbnail mt-4 mb-2"
+                                 style="width: 150px; z-index: 1">
+                            <a class="btn btn-outline-dark" data-mdb-ripple-color="dark"
+                                    style="z-index: 1;" asp-action="Edit" asp-route-id="@Model.Id">
+                                Edit profile
+                            </a>
+                        </div>
+                        <div class="ms-3" style="margin-top: 130px;">
+                            <h5>@Model.ScreenName</h5>
+                            
+                        </div>
+                    </div>
+                    <div class="p-4 text-black" style="background-color: #f8f9fa;">
+                        <div class="d-flex justify-content-end text-center py-1">
+                            <div>
+                                <p class="mb-1 h5">@Model.Posts.Count()</p>
+                                <p class="small text-muted mb-0">Photos</p>
+                            </div>
+                            <div class="px-3">
+                                <p class="mb-1 h5">@Model.Followers.Count()</p>
+                                <p class="small text-muted mb-0">Followers</p>
+                            </div>
+                            <div>
+                                <p class="mb-1 h5">@Model.Following.Count()</p>
+                                <p class="small text-muted mb-0">Following</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-4 text-black">
+                        <div class="mb-5">
+                            <p class="lead fw-normal mb-1">About</p>
+                            <div class="p-4" style="background-color: #f8f9fa;">
+                                <p class="font-italic mb-1">@Model.About</p>
+                              
+                            </div>
+                        </div>
+                        
+                        <div class="row g-2">
+                            @foreach(Post post in Model.Posts){
+                            <div class="col-4 mb-2">
+                                <img src="@post.ImgUrl"
+                                     alt="image 1" class="w-100 rounded-3">
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
