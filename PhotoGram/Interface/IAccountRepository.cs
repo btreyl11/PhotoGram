@@ -12,7 +12,7 @@ namespace PhotoGram.Interface
         public Task<Account> GetByIdAsync(int id);
         public Task<Account> GetByIdAsyncNoTracking(int id);
         public Task<Account> GetByIdAsync_IncludeAll(int id);
-
+        public Task<Account> GetByIdNTAsync_IncludeAll(int id);
         /* -- Followers & Follow Getters -- */
         public ICollection<Account> GetFollowerListAsync(Account account);
         public ICollection<Account> GetFollowListAsync(Account account);

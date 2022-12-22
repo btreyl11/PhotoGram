@@ -3,6 +3,16 @@
     ViewData["Title"] = "Home Page";
 }
 
+<style>
+    .thumb img{
+        width: 30px;
+        height: 30px;
+        -o-object-fit: cover;
+        object-fit: cover;
+        overflow: hidden;
+        border-radius: 50%;
+    }
+</style>
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
@@ -16,8 +26,11 @@
               <div class="card mb-4 box-shadow">
                 <img class="card-img-top" src="@post.ImgUrl" alt="Card image cap">
                 <div class="card-body">
-                    <img class="col-1 rounded-circle" src="@post.account.ProfilImgURL">
-                    <a asp-controller="Profile" asp-action="Details" asp-route-id="@post.account.Id">@post.account.ScreenName</a>
+                    <div class="thumb">
+                    <img class="col-1 img-fluid" src="@post.account.ProfilImgURL">
+                                <a asp-controller="Profile" asp-action="Details" asp-route-id="@post.account.Id">@post.account.ScreenName</a>
+                    </div>
+                    
                   <p class="card-text">@post.Caption</p>
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">

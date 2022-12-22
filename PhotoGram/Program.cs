@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using PhotoGram.Data;
+using PhotoGram.Helper;
 using PhotoGram.Interface;
 using PhotoGram.Repository;
+using PhotoGram.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(option => option.UseSqlite(@
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IPhotoPostService, PhotoPostService>();
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 var app = builder.Build();
 
 if (args.Length == 1 && args[0].ToLower() == "seeddata")

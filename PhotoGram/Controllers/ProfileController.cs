@@ -8,10 +8,12 @@ namespace PhotoGram.Controllers
     public class ProfileController : Controller
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IPhotoPostService _photoPostService;
 
-        public ProfileController(IAccountRepository accountRepository)
+        public ProfileController(IAccountRepository accountRepository, IPhotoPostService photoPostService)
         {
             _accountRepository = accountRepository;
+            _photoPostService = photoPostService;
         }
         public IActionResult Index()
         {
@@ -69,6 +71,47 @@ namespace PhotoGram.Controllers
             return RedirectToAction("Details");
         }
 
+        public  async Task<IActionResult> CreatePost(int id)
+        {
+            
+            Account acc = await _accountRepository.GetByIdAsync_IncludeAll(id);
+            if (acc == null)
+                return View("Error");
+            var postMV = new CreatePostModelView();
+
+            return View(postMV);
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreatePost(int id, CreatePostModelView postMv)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Error");
+            }
+            var acc = await _accountRepository.GetByIdNTAsync_IncludeAll(id);
+
+            if(acc== null)
+            {
+                return View("Error");
+            }
+            var result = await _photoPostService.PostPhotoAsync(postMv.Image);
+            if (result == null)
+                throw new Exception("Error uploading image!");
+            Post post = new Post()
+            {
+                AccountId = id,
+                Caption = postMv.Caption,
+                ImgUrl = result.Url.ToString()
+
+            };
+
+            acc.Posts.Add(post);
+
+            _accountRepository.UpdateAccount(acc);
+            
+            return RedirectToAction("Details", new {id = id});
+
+        }
         
     }
 }

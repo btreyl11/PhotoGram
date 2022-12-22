@@ -30,7 +30,7 @@ namespace PhotoGram.Repository
 
         public async Task<IEnumerable<Account>> GetAllAsync()
         {
-            return await _context.Accounts.ToListAsync();
+            return await _context.Accounts.Include(a => a.Following).Include(a => a.Followers).Include(a => a.Posts).ToListAsync();
         }
 
         public async Task<Account> GetByScreenNameAsync(string ScreenName)
@@ -52,6 +52,17 @@ namespace PhotoGram.Repository
                 .Include(a => a.Posts)
                 .Include(a => a.Following)
                 .Include(a => a.Followers)
+                .FirstOrDefaultAsync();
+
+        }
+        public async Task<Account> GetByIdNTAsync_IncludeAll(int id)
+        {
+            return await _context.Accounts
+                .Where(a => a.Id == id)
+                .Include(a => a.Posts)
+                .Include(a => a.Following)
+                .Include(a => a.Followers)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
 
         }
