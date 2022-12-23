@@ -37,7 +37,14 @@ namespace PhotoGram.Repository
         {
             return await _context.Posts.Include(p => p.account).Include(p=>p.Likes).ToListAsync();
         }
-
+        public async Task<Post> GetByIdAsync(int id)
+        {
+            return await _context.Posts
+                .Include(p => p.account)
+                .Include(p => p.Likes)
+                .Where(p => p.Id == id)
+                .FirstOrDefaultAsync();
+        }
         public async Task<Post> GetPostsAsync(int id)
         {
             return await _context.Posts.Where( p=> p.Id == id).FirstOrDefaultAsync();

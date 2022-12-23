@@ -5,7 +5,7 @@ namespace PhotoGram.Interface
     public interface IPostRepository
     {
         Task<IEnumerable<Post>> GetAllAsync();
-
+        Task<Post> GetByIdAsync(int id);
         Task<IEnumerable<Post>> GetAccountPostsAsync(string ScreenName);
 
         Task<Post> GetPostsAsync(int id);

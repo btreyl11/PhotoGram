@@ -1,0 +1,59 @@
+﻿@model Post;
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
+<link rel="stylesheet" href="~/css/indexpages.css" />
+<center>
+<div class="col-8">
+          <div >
+              <div class="card mb-4 box-shadow">
+                <img class="card-img-top" src="@Model.ImgUrl" alt="Card image cap">
+                <div class="card-body">
+                    <div class="thumb" style="text-align:left">
+                    <img class="col-1 img-fluid" src="@Model.account.ProfilImgURL">
+                                <a asp-controller="Profile" asp-action="Details" asp-route-id="@Model.account.Id">@Model.account.ScreenName</a>
+                    </div>
+                    
+                  <p class="card-text" style="text-align:left">@Model.Caption</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-outline-secondary"> <i class="far fa-heart"></i>  </button>
+                     
+                    </div>
+                    
+                    
+                        
+                    
+                    
+                        <small align="right">@Model.Likes.Count() Likes   |    0 Comments</small>
+                  
+                    
+                </div>
+                    <p align="right"><button type="button" class="btn btn-sm btn-outline-secondary"><i class="far fa-trash-alt"></i></button></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+                <h2 align="left">Comments:</h2>
+                <br />
+                <form>
+                <div align="left" class="form-group">
+                    <label for="CommentBox">Comment</label>
+                    <input type="text" class="form-control" id="CommentBox" placeholder="Leave a comment..."/>
+                    
+                </div>
+                <div align="right" style="padding-top:10px" class="form-group">
+                    
+                    <button class="btn btn-primary" type="submit"> Comment</button>
+                </div>
+                </form>
+                    
+                
+            </div>
+            
+</div>
+</center>

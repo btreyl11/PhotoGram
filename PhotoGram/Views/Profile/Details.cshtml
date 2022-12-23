@@ -52,12 +52,43 @@
                         
                         <div class="row g-2">
                             @foreach(Post post in Model.Posts){
-                            <div class="col-4 mb-2">
-                                <img src="@post.ImgUrl"
-                                     alt="image 1" class="w-100 rounded-3">
-                            </div>
+                                <div class="col-4 mb-2 hover-overlay ripple shadow-1-strong rounded">
+                                    <a asp-controller="Post" asp-action="Detail" asp-route-id="@post.Id" >
+                                        <img  src="@post.ImgUrl"
+                                            data-mbd-img="@post.ImgUrl"
+                                         alt="image 1" class="w-100 rounded-3">
+                                    </a>
+                                    
+                                </div>
+                               
+                                
                             }
                             <div class="col-5 mb-2"><a asp-action="CreatePost" asp-route-id="@Model.Id" style="text-decoration:none; color:black; font-size:large"class="fa fa-plus-square"></a>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                                    Launch demo modal
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ...
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="button" class="btn btn-primary">Save changes</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
