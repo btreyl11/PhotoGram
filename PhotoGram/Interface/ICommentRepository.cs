@@ -7,6 +7,7 @@ namespace PhotoGram.Interface
     {
         Task<IEnumerable<Comment>> GetAllAsync();
         Task<Comment> GetByIdAsync(int id);
+        Task<IEnumerable<Comment>> GetComentsByPostIdAsync(int id);
 
         Task<IEnumerable<Comment>> GetAllPostCommentsAsync(int postId);
 

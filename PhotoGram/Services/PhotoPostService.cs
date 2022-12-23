@@ -18,13 +18,11 @@ namespace PhotoGram.Services
                 config.Value.ApiSecret);
             _cloudinary = new Cloudinary(account);
         }
-        public async Task<DeletionResult> DeletePhotoAsync(string photoId)
+        public async Task<DeletionResult> DeletePhotoAsync(string publicUrl)
         {
-            var deleteParams = new DeletionParams(photoId);
-
-            var result = await _cloudinary.DestroyAsync(deleteParams);
-
-            return result;
+            var publicId = publicUrl.Split('/').Last().Split('.')[0];
+            var deleteParams = new DeletionParams(publicId);
+            return await _cloudinary.DestroyAsync(deleteParams);
         }
 
         public async Task<ImageUploadResult> PostPhotoAsync(IFormFile file)

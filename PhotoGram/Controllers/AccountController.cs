@@ -54,6 +54,12 @@ namespace PhotoGram.Controllers
 
             return RedirectToAction("Index");
         }
+        [HttpPost]
+        public async Task<IActionResult> Delete(Account accid)
+        {
+            
+            return View();
+        }
 
     }
 

@@ -47,9 +47,17 @@ namespace PhotoGram.Repository
 
         public async Task<Comment> GetByIdAsync(int id)
         {
-            return await _context.Comments.Where(c => c.Id == id).FirstOrDefaultAsync();
+            return await _context.Comments
+                .Include(c => c.Likes)
+                .Where(c => c.Id == id).FirstOrDefaultAsync();
         }
-
+        public async Task<IEnumerable<Comment>> GetComentsByPostIdAsync(int postId)
+        {
+            return await _context.Comments
+                .Include(c => c.Likes)
+                .Where(c => postId == c.PostId)
+                .ToListAsync();
+        }
         public bool RemoveLike(Comment comment, Account account)
         {
             if (comment.Likes == null)
