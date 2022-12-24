@@ -10,11 +10,13 @@ namespace PhotoGram.Controllers
     {
         public readonly IAccountRepository _accountRepo;
         public readonly IPhotoPostService _photoPostService;
+        public readonly IPostRepository _postRepository;
 
-        public AccountController(IAccountRepository accountRepo, IPhotoPostService photoPostService)
+        public AccountController(IAccountRepository accountRepo, IPhotoPostService photoPostService, IPostRepository postRepository)
         {
             _accountRepo = accountRepo;
             _photoPostService = photoPostService;
+            _postRepository = postRepository;
         }
         public async Task<IActionResult> Index()
         {
@@ -54,11 +56,29 @@ namespace PhotoGram.Controllers
 
             return RedirectToAction("Index");
         }
-        [HttpPost]
-        public async Task<IActionResult> Delete(Account accid)
+        
+        public async Task<IActionResult> Delete(int id)
         {
-            
-            return View();
+            var account = await _accountRepo.GetByIdAsync_IncludeAll(id);
+
+            if (account == null)
+            {
+                return NotFound();
+            }
+            if(account.Posts != null && account.Posts.Any())
+            {
+                foreach(var post in account.Posts)
+                {
+                    var result = await _photoPostService.DeletePhotoAsync(post.ImgUrl);
+                    if(!_postRepository.Remove(post))
+                    {
+                        throw new Exception("Error Deleting Post");
+                    }
+                }
+                
+            }
+            _accountRepo.DeleteAccount(account);
+            return RedirectToAction("Index");
         }
 
     }
