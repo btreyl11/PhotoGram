@@ -22,7 +22,7 @@ namespace PhotoGram.Controllers
         public async Task<IActionResult> Details(int id)
         {
             
-            var model = await _accountRepository.GetByIdAsync_IncludeAll(id);
+            var model = await _accountRepository.GetByIdAsync(id);
 
             if (model == null)
             {
@@ -54,7 +54,7 @@ namespace PhotoGram.Controllers
                 ModelState.AddModelError("", "Failed to edit club");
                 return View("Edit", profMV);
             }
-            var usrProfile = await _accountRepository.GetByIdAsyncNoTracking(id);
+            var usrProfile = await _accountRepository.GetByIdAsync(id,new Data.RepositorySettings(Data.Includes.None, false));
             if(usrProfile== null)
             {
                 return View("Error");
@@ -74,7 +74,7 @@ namespace PhotoGram.Controllers
         public  async Task<IActionResult> CreatePost(int id)
         {
             
-            Account acc = await _accountRepository.GetByIdAsync_IncludeAll(id);
+            Account acc = await _accountRepository.GetByIdAsync(id);
             if (acc == null)
                 return View("Error");
             var postMV = new CreatePostModelView();
@@ -88,7 +88,7 @@ namespace PhotoGram.Controllers
             {
                 return View("Error");
             }
-            var acc = await _accountRepository.GetByIdNTAsync_IncludeAll(id);
+            var acc = await _accountRepository.GetByIdAsync(id, new Data.RepositorySettings(Data.Includes.Posts, false));
 
             if(acc== null)
             {

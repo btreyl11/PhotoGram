@@ -59,24 +59,13 @@ namespace PhotoGram.Controllers
         
         public async Task<IActionResult> Delete(int id)
         {
-            var account = await _accountRepo.GetByIdAsync_IncludeAll(id);
+            var account = await _accountRepo.GetByIdAsync(id);
 
             if (account == null)
             {
                 return NotFound();
             }
-            if(account.Posts != null && account.Posts.Any())
-            {
-                foreach(var post in account.Posts)
-                {
-                    var result = await _photoPostService.DeletePhotoAsync(post.ImgUrl);
-                    if(!_postRepository.Remove(post))
-                    {
-                        throw new Exception("Error Deleting Post");
-                    }
-                }
-                
-            }
+            
             _accountRepo.DeleteAccount(account);
             return RedirectToAction("Index");
         }

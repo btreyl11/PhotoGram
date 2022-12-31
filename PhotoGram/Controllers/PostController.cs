@@ -35,7 +35,7 @@ namespace PhotoGram.Controllers
         public async Task<IActionResult> Delete(int id, Post post)
         {
             int accId = post.AccountId;
-            Account account = await _accountRepository.GetByIdAsync_IncludeAll(accId);
+            Account account = await _accountRepository.GetByIdAsync(accId);
             Post fullPost = await _postRepository.GetByIdAsync(post.Id);
             if (account == null || post == null)
             {

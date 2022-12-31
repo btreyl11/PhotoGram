@@ -1,8 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Ajax.Utilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Query;
 using PhotoGram.Data;
 using PhotoGram.Interface;
 using PhotoGram.Models;
+using System.Dynamic;
 using System.Security.Principal;
 
 namespace PhotoGram.Repository
@@ -10,9 +13,11 @@ namespace PhotoGram.Repository
     public class AccountRepository : IAccountRepository
     {
         public readonly ApplicationDbContext _context;
+        private RepositorySettings _default;
         public AccountRepository(ApplicationDbContext context)
         {
             _context= context;
+            _default = new RepositorySettings(Includes.All, true);
         }
 
         public bool AddAccount(Account account)
@@ -23,61 +28,177 @@ namespace PhotoGram.Repository
         }
         public bool DeleteAccount(Account account)
         {
+            //Remove Following
+            foreach(Account following in account.Following)
+            {
+                following.Followers.Remove(account);
+            }
+            //Remove Followers
+            foreach(Account follower in account.Followers)
+            {
+                follower.Following.Remove(account);
+            }
+            //Delete Post Comments
+            IEnumerable<Comment> Comments = _context.Comments.Where(c => c.AccountId == account.Id).ToList();
+            foreach (Comment comment in Comments)
+            {
+                _context.Comments.Remove(comment);
+            }
+            //Remove Posts
+            if (account.Posts != null && account.Posts.Any())
+            {
+                foreach(Post post in account.Posts)
+                {
+                    //Delete Post Comments
+                    IEnumerable<Comment> p_comments = _context.Comments.Where(c => c.PostId== post.Id).ToList();
+                    foreach(Comment comment in p_comments)
+                        _context.Comments.Remove(comment);
+
+                    _context.Posts.Remove(post);
+                    
+                }
+            }
             _context.Accounts.Remove(account);
 
             return Save();
         }
 
-        public async Task<IEnumerable<Account>> GetAllAsync()
+        public async Task<IEnumerable<Account>> GetAllAsync(RepositorySettings settings = null)
         {
-            return await _context.Accounts.Include(a => a.Following).Include(a => a.Followers).Include(a => a.Posts).ToListAsync();
+            if (settings == null)
+                settings = _default;
+            if (settings.include() == Includes.None)
+            {
+                if (settings.isTracking())
+                    return await _context.Accounts.ToListAsync();
+                else
+                {
+                    return await _context.Accounts.AsNoTracking().ToListAsync();
+                }
+            }
+            else
+            {
+                IIncludableQueryable<Account, ICollection<Account>> query = null;
+
+                switch (settings.include())
+                {
+                    case Includes.All:
+                        query = _context.Accounts
+                            .Include(a => a.Followers)
+                            .Include(a => a.Posts)
+                            .Include(a => a.Following);
+                        break;
+                    case Includes.Follows:
+                       query = _context.Accounts.Include(a => a.Following)
+                            .Include(a => a.Followers);
+                        break;
+                }
+                if(query == null)
+                {
+                    if(settings.include() == Includes.Posts)
+                    {
+                        if(settings.isTracking())
+                            return await _context.Accounts.Include("Account.Posts").ToListAsync();
+                        return await _context.Accounts.Include("Account.Posts").AsNoTracking().ToListAsync();
+                    }
+                    throw new Exception("Error Loading accounts with provided settings");
+                }
+                if (settings.isTracking())
+                    return await query.ToListAsync();
+                return await query.AsNoTracking().ToListAsync();
+            }
         }
 
-        public async Task<Account> GetByScreenNameAsync(string ScreenName)
+        public async Task<Account> GetByScreenNameAsync(string ScreenName, RepositorySettings settings = null)
         {
-            return await _context.Accounts.Where(a => a.ScreenName == ScreenName).FirstOrDefaultAsync();
-        }
-        public async Task<Account> GetByScreenName_IncludeFollowerAsync(string ScreenName)
-        {
-            return await _context.Accounts.Where(a => a.ScreenName == ScreenName).Include(a => a.Followers).FirstOrDefaultAsync();
-        }
-        public async Task<Account> GetByScreenName_IncludeFollowingAsync(string ScreenName)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<Account> GetByIdAsync_IncludeAll(int id)
-        {
-            return await _context.Accounts
-                .Where(a => a.Id == id)
-                .Include(a => a.Posts)
-                .Include(a => a.Following)
-                .Include(a => a.Followers)
-                .FirstOrDefaultAsync();
+            if (settings == null)
+                settings = _default;
+            if (settings.include() == Includes.None)
+            {
+                if (settings.isTracking())
+                    return await _context.Accounts.Where(a => a.ScreenName == ScreenName).FirstOrDefaultAsync();
+                else
+                {
+                    return await _context.Accounts.AsNoTracking().Where(a => a.ScreenName == ScreenName).FirstOrDefaultAsync();
+                }
+            }
+            else
+            {
+                IIncludableQueryable<Account, ICollection<Account>> query = null;
 
+                switch (settings.include())
+                {
+                    case Includes.All:
+                        query = _context.Accounts
+                            .Include(a => a.Followers)
+                            .Include(a => a.Posts)
+                            .Include(a => a.Following);
+                        break;
+                    case Includes.Follows:
+                        query = _context.Accounts.Include(a => a.Following)
+                             .Include(a => a.Followers);
+                        break;
+                }
+                if (query == null)
+                {
+                    if (settings.include() == Includes.Posts)
+                    {
+                        if (settings.isTracking())
+                            return await _context.Accounts.Include("Account.Posts").Where(a => a.ScreenName == ScreenName).FirstOrDefaultAsync();
+                        return await _context.Accounts.Include("Account.Posts").AsNoTracking().Where(a => a.ScreenName == ScreenName).FirstOrDefaultAsync();
+                    }
+                    throw new Exception("Error Loading Account: " + ScreenName + " with provided settings");
+                }
+                if (settings.isTracking())
+                    return await query.Where(a => a.ScreenName == ScreenName).FirstOrDefaultAsync();
+                return await query.AsNoTracking().Where(a => a.ScreenName == ScreenName).FirstOrDefaultAsync();
+            }
+            
         }
-        public async Task<Account> GetByIdNTAsync_IncludeAll(int id)
+        public async Task<Account> GetByIdAsync(int id, RepositorySettings settings = null)
         {
-            return await _context.Accounts
-                .Where(a => a.Id == id)
-                .Include(a => a.Posts)
-                .Include(a => a.Following)
-                .Include(a => a.Followers)
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+            if (settings == null)
+                settings = _default;
+            if (settings.include() == Includes.None)
+            {
+                if (settings.isTracking())
+                    return await _context.Accounts.Where(a => a.Id == id).FirstOrDefaultAsync();
+                else
+                {
+                    return await _context.Accounts.AsNoTracking().Where(a => a.Id == id).FirstOrDefaultAsync();
+                }
+            }
+            else
+            {
+                IIncludableQueryable<Account, ICollection<Account>> query = null;
 
-        }
-        public async Task<Account> GetByIdAsync(int id)
-        {
-            return await _context.Accounts
-                .Where(a => a.Id == id)
-                .FirstOrDefaultAsync();
-        }
-        public async Task<Account> GetByIdAsyncNoTracking(int id)
-        {
-            return await _context.Accounts
-                .Where(a => a.Id == id)
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+                switch (settings.include())
+                {
+                    case Includes.All:
+                        query = _context.Accounts
+                            .Include(a => a.Followers)
+                            .Include(a => a.Posts)
+                            .Include(a => a.Following);
+                        break;
+                    case Includes.Follows:
+                        query = _context.Accounts.Include(a => a.Following)
+                             .Include(a => a.Followers);
+                        break;
+                }
+                if (query == null)
+                {
+                    if (settings.include() == Includes.Posts)
+                    {
+                        if (settings.isTracking())
+                            return await _context.Accounts.Include(a => a.Posts).Where(a => a.Id == id).FirstOrDefaultAsync();
+                        return await _context.Accounts.Include(a => a.Posts).AsNoTracking().Where(a => a.Id == id).FirstOrDefaultAsync();
+                    }
+                    throw new Exception("Error Loading Account: " + id + " with provided settings");
+                }
+                if (settings.isTracking())
+                    return await query.Where(a => a.Id == id).FirstOrDefaultAsync();
+                return await query.AsNoTracking().Where(a => a.Id == id).FirstOrDefaultAsync();
+            }
         }
         public ICollection<Account> GetFollowerListAsync(Account account)
         { 

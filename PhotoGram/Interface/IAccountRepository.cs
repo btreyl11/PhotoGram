@@ -1,18 +1,14 @@
 ﻿using PhotoGram.Models;
+using PhotoGram.Data;
 
 namespace PhotoGram.Interface
 {
     public interface IAccountRepository
     {
         /* -- Account Getters -- */
-        public Task<IEnumerable<Account>> GetAllAsync();
-        public Task<Account> GetByScreenNameAsync(string ScreenName);
-        public  Task<Account> GetByScreenName_IncludeFollowerAsync(string ScreenName);
-        public Task<Account> GetByScreenName_IncludeFollowingAsync(string ScreenName);
-        public Task<Account> GetByIdAsync(int id);
-        public Task<Account> GetByIdAsyncNoTracking(int id);
-        public Task<Account> GetByIdAsync_IncludeAll(int id);
-        public Task<Account> GetByIdNTAsync_IncludeAll(int id);
+        public Task<IEnumerable<Account>> GetAllAsync(RepositorySettings settings=null);
+        public Task<Account> GetByScreenNameAsync(string ScreenName, RepositorySettings settings=null);
+        public Task<Account> GetByIdAsync(int id, RepositorySettings settings=null);
         /* -- Followers & Follow Getters -- */
         public ICollection<Account> GetFollowerListAsync(Account account);
         public ICollection<Account> GetFollowListAsync(Account account);

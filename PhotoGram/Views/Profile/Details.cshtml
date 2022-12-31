@@ -4,6 +4,11 @@
 *@
 @{
 }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+
+<!-- jQuery Modal -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
 <section class="h-100 gradient-custom-2">
     <div class="container py-5 h-100">
@@ -53,18 +58,38 @@
                         <div class="row g-2">
                             @foreach(Post post in Model.Posts){
                                 <div class="col-4 mb-2 hover-overlay ripple shadow-1-strong rounded">
-                                    <a asp-controller="Post" asp-action="Detail" asp-route-id="@post.Id" >
+                                    <a href="#ext-@post.Id" rel="modal:open">
                                         <img  src="@post.ImgUrl"
                                             data-mbd-img="@post.ImgUrl"
                                          alt="image 1" class="w-100 rounded-3">
                                     </a>
                                     
                                 </div>
+                                <div id="ext-@post.Id" class="modal">
+                                    <div class="card mb-4 box-shadow">
+                                        <img class="card-img-top" src="@post.ImgUrl" alt="Card image cap">
+                                        <div class="card-body">
+                                            <div class="thumb" style="text-align:left">
+                                                <img class="img-fluid col-1 " src="@post.account.ProfilImgURL">
+                                                <a asp-controller="Profile" asp-action="Details" asp-route-id="@post.account.Id">@post.account.ScreenName</a>
+                                            </div>
+
+                                            <p class="card-text" style="text-align:left">@post.Caption</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary"> <i class="far fa-heart"></i>  </button>
+                                                </div>
+                                                <small align="right">@post.Likes.Count() Likes   |    0 Comments</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                
                                 
                             }
-                            <div class="col-5 mb-2"><a asp-action="CreatePost" asp-route-id="@Model.Id" style="text-decoration:none; color:black; font-size:large"class="fa fa-plus-square"></a>
-                             </div>   
+                            <div class="row-col-4 mb-2">
+                                <a asp-action="CreatePost" asp-route-id="@Model.Id" style="text-decoration:none; color:black; font-size:large"class="fa fa-plus-square"></a>
+                            </div>   
 
                                 
                             
